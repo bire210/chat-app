@@ -76,7 +76,7 @@ const accessChat = async (req, res) => {
       .json(
         new ApiError(
           error.statusCode || 500,
-          error.message || "Internal Server Error"
+          error.error || "Internal Server Error"
         )
       );
   }
@@ -139,7 +139,7 @@ const createGroupChat = async (req, res) => {
       .json(
         new ApiError(
           error.statusCode || 500,
-          error.message || "Internal Server Error"
+          error.error || "Internal Server Error"
         )
       );
   }
@@ -183,7 +183,14 @@ const allChatsOfLoginedUser = async (req, res) => {
       .json(new ApiResponse(200, chats, "All chats of logged-in user"));
   } catch (error) {
     console.error(error);
-    res.status(500).json(new ApiError(500, "Internal server error"));
+    res
+      .status(error.statusCode || 500)
+      .json(
+        new ApiError(
+          error.statusCode || 500,
+          error.error || "Internal Server Error"
+        )
+      );
   }
 };
 
@@ -233,7 +240,7 @@ const addMemberToGroupChat = async (req, res) => {
       .json(
         new ApiError(
           error.statusCode || 500,
-          error.message || "Internal Server Error"
+          error.error || "Internal Server Error"
         )
       );
   }
@@ -285,7 +292,7 @@ const removeMemberFromGroupChat = async (req, res) => {
       .json(
         new ApiError(
           error.statusCode || 500,
-          error.message || "Internal Server Error"
+          error.error || "Internal Server Error"
         )
       );
   }

@@ -26,7 +26,7 @@ const register = async (req, res) => {
         name: userData.name,
         email: userData.email,
         password: hashPassword,
-        image:userData.image
+        image: userData.image,
       },
     });
     res.status(201).json(new ApiResponse(201, createUser, "user is created"));
@@ -41,7 +41,14 @@ const register = async (req, res) => {
       res.status(400).json(new ApiError(400, errors));
     } else {
       console.error(error);
-      res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.message || 'Internal Server Error'));
+      res
+        .status(error.statusCode || 500)
+        .json(
+          new ApiError(
+            error.statusCode || 500,
+            error.error || "Internal Server Error"
+          )
+        );
     }
   }
 };
@@ -50,9 +57,9 @@ const login = async (req, res) => {
   try {
     const userData = userLoginValidation.parse(req.body);
     const foundUser = await prisma.user.findFirst({
-        where: {
-            email: userData.email,
-        }
+      where: {
+        email: userData.email,
+      },
     });
     // console.log("foundUser",foundUser)
 
@@ -69,7 +76,7 @@ const login = async (req, res) => {
     }
     const token = jwt.sign(foundUser.email, process.env.SECRET_KEY);
     const user = {
-      id:foundUser.id,
+      id: foundUser.id,
       name: foundUser.name,
       email: foundUser.email,
       image: foundUser.image,
@@ -87,7 +94,14 @@ const login = async (req, res) => {
       res.status(400).json(new ApiError(400, errors));
     } else {
       console.error(error);
-      res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.message || 'Internal Server Error'));
+      res
+        .status(error.statusCode || 500)
+        .json(
+          new ApiError(
+            error.statusCode || 500,
+            error.error || "Internal Server Error"
+          )
+        );
     }
   }
 };
@@ -104,7 +118,7 @@ const search = async (req, res) => {
         },
       },
       select: {
-        id:true,
+        id: true,
         name: true,
         email: true,
         image: true,
@@ -112,7 +126,14 @@ const search = async (req, res) => {
     });
     res.status(200).json(new ApiResponse(200, foundUsers, "all found users"));
   } catch (error) {
-    res.status(500).json(new ApiError(500, error.message));
+    res
+      .status(error.statusCode || 500)
+      .json(
+        new ApiError(
+          error.statusCode || 500,
+          error.error || "Internal Server Error"
+        )
+      );
   }
 };
 export { register, login, search };

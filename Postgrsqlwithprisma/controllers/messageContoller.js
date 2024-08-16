@@ -37,7 +37,7 @@ const allMessageOfAchat=async(req,res)=>{
       res.status(200).json(new ApiResponse(200,messages,"all messages"));
     } catch (error) {
       console.error(error);
-      res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.message || 'Internal Server Error'));
+      res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.error || 'Internal Server Error'));
     }
   }
 
@@ -91,7 +91,7 @@ const allMessageOfAchat=async(req,res)=>{
       res.status(201).json(new ApiResponse(201, message, "Message sent"));
     } catch (error) {
       console.error(error);
-      res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.message || 'Internal Server Error'));
+      res.status(error.statusCode || 500).json(new ApiError(error.statusCode || 500, error.error || 'Internal Server Error'));
     }
   };
   
