@@ -95,44 +95,43 @@ const createGroupChat = async (req, res) => {
         "More than 2 users are required to form a group chat"
       );
     }
-   users.push(req.user.id);
-   const groupUsers=users.map((element)=>{
-    return {
-      id:element
-    }
-   })
-   const groupChat = await prisma.chat.create({
-    data: {
-      chatName: groupName,
-      isGroupChat: true,
-      users: {
-        connect: groupUsers,
+    users.push(req.user.id);
+    const groupUsers = users.map((element) => {
+      return {
+        id: element,
+      };
+    });
+    const groupChat = await prisma.chat.create({
+      data: {
+        chatName: groupName,
+        isGroupChat: true,
+        users: {
+          connect: groupUsers,
+        },
+        groupAdminId: req.user.id,
       },
-      groupAdminId: req.user.id
-    },
-    include: {
-      users: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          image: true,
+      include: {
+        users: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            image: true,
+          },
+        },
+        message: true,
+        latestMessage: true,
+        groupAdmin: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            image: true,
+          },
         },
       },
-      message: true,
-      latestMessage: true,
-      groupAdmin:{
-        select:{
-          id: true,
-          email: true,
-          name: true,
-          image: true,
-        }
-      }
-    },
-  });
-  res.status(201).json(new ApiResponse(201, groupChat, "Group Chat created"));
-
+    });
+    res.status(201).json(new ApiResponse(201, groupChat, "Group Chat created"));
   } catch (error) {
     console.error(error);
     res
@@ -188,4 +187,114 @@ const allChatsOfLoginedUser = async (req, res) => {
   }
 };
 
-export { accessChat, allChatsOfLoginedUser ,createGroupChat};
+const addMemberToGroupChat = async (req, res) => {
+  const { groupId, userId } = req.body;
+  try {
+    if (!groupId || !userId) {
+      throw new ApiError(400, "Please provide group ID and user ID");
+    }
+
+    // Check if the user is already in the group
+    const existingChat = await prisma.chat.findUnique({
+      where: { id: groupId },
+      include: {
+        users: {
+          select: { id: true },
+        },
+      },
+    });
+
+    if (!existingChat) {
+      throw new ApiError(404, "Group not found");
+    }
+
+    const isUserInGroup = existingChat.users.some((user) => user.id === userId);
+    if (isUserInGroup) {
+      throw new ApiError(400, "User is already a member of the group");
+    }
+
+    // Add user to group
+    await prisma.chat.update({
+      where: { id: groupId },
+      data: {
+        users: {
+          connect: { id: userId },
+        },
+      },
+    });
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, null, "User added to group chat"));
+  } catch (error) {
+    console.error(error);
+    res
+      .status(error.statusCode || 500)
+      .json(
+        new ApiError(
+          error.statusCode || 500,
+          error.message || "Internal Server Error"
+        )
+      );
+  }
+};
+
+const removeMemberFromGroupChat = async (req, res) => {
+  const { groupId, userId } = req.body;
+  try {
+    if (!groupId || !userId) {
+      throw new ApiError(400, "Please provide group ID and user ID");
+    }
+
+    // Check if the user is in the group
+    const existingChat = await prisma.chat.findUnique({
+      where: { id: groupId },
+      include: {
+        users: {
+          select: { id: true },
+        },
+      },
+    });
+
+    if (!existingChat) {
+      throw new ApiError(404, "Group not found");
+    }
+
+    const isUserInGroup = existingChat.users.some((user) => user.id === userId);
+    if (!isUserInGroup) {
+      throw new ApiError(400, "User is not a member of the group");
+    }
+
+    // Remove user from group
+    await prisma.chat.update({
+      where: { id: groupId },
+      data: {
+        users: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, null, "User removed from group chat"));
+  } catch (error) {
+    console.error(error);
+    res
+      .status(error.statusCode || 500)
+      .json(
+        new ApiError(
+          error.statusCode || 500,
+          error.message || "Internal Server Error"
+        )
+      );
+  }
+};
+
+export {
+  accessChat,
+  allChatsOfLoginedUser,
+  createGroupChat,
+  addMemberToGroupChat,
+  removeMemberFromGroupChat,
+};
