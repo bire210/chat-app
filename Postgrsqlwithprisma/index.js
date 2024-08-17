@@ -27,7 +27,7 @@ if (cluster.isPrimary) {
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin: "http://localhost:5173",
+      origin: "https://chat-nemcc4ub7-bire210s-projects.vercel.app",
     })
   );
   app.get("/", (req, res) => {
@@ -57,7 +57,7 @@ if (cluster.isPrimary) {
 
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", // Replace with your client's URL
+      origin: "https://chat-nemcc4ub7-bire210s-projects.vercel.app", // Replace with your client's URL
       methods: ["GET", "POST"],
     },
   });

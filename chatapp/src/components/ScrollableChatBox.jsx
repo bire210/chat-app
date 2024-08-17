@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import io from "socket.io-client";
 import { AxiosInstance } from "../api/apiInstance";
 
-const ENDPOINT = "http://localhost:8000";
+const ENDPOINT = "https://chat-app-udbk.onrender.com";
 let socket;
 
 const ScrollableChatBox = ({ chatId }) => {
