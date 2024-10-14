@@ -253,15 +253,23 @@ const removeMemberFromGroupChat = async (req, res) => {
       throw new ApiError(400, "Please provide group ID and user ID");
     }
 
+
     // Check if the user is in the group
     const existingChat = await prisma.chat.findUnique({
       where: { id: groupId },
       include: {
+        groupAdmin:true,
         users: {
           select: { id: true },
         },
       },
     });
+
+    // console.log(existingChat)
+    if (userId == existingChat.groupAdmin.id) {
+      throw new ApiError(400, "he is an admin");
+    }
+
 
     if (!existingChat) {
       throw new ApiError(404, "Group not found");
