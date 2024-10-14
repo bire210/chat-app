@@ -27,7 +27,7 @@ if (cluster.isPrimary) {
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin:["http://localhost:5173", "https://chat-nemcc4ub7-bire210s-projects.vercel.app"]
+      origin:["*","http://localhost:5173", "https://chat-app-nu-brown.vercel.app/"]
     })
   );
   app.get("/", (req, res) => {
