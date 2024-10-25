@@ -1,16 +1,17 @@
-import React, { useCallback, useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import {  useEffect, useState } from "react";
 import { useChatContext } from "../context/ChatProviderContext";
 import { AxiosInstance } from "../api/apiInstance";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ChatList from "../components/chatlist/ChatList";
+// import ChatList from "../components/chatlist/ChatList";
 import Cookies from "js-cookie";
 import ChatBox from "../components/ChatBox";
 import Modal from "../components/Modal";
 
 const ChatPage = () => {
   const [query, setQuery] = useState("");
-  const [error, setError] = useState("");
+  const [apiError, setError] = useState("");
   const [searchUsers, setSearchUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatList, setChatLists] = useState(null);
@@ -18,7 +19,7 @@ const ChatPage = () => {
 
   const { loginUser, selectedChat, setSelectedChat } = useChatContext();
   const token = Cookies.get("token") || "";
-  const fetchChats = useCallback(async () => {
+  const fetchChats = async () => {
     try {
       const response = await AxiosInstance.get(`/chat/all-chats`, {
         headers: {
@@ -29,11 +30,11 @@ const ChatPage = () => {
     } catch (error) {
       console.error("Error fetching chats", error);
     }
-  }, [chatList]);
+  };
 
   useEffect(() => {
     fetchChats();
-  }, [fetchChats, chatList]);
+  }, [selectedChat]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -45,7 +46,7 @@ const ChatPage = () => {
     } catch (error) {
       console.error("Error fetching quotes", error);
       setError(error.response.data.error);
-      toast.warning(`${error}`, {
+      toast.warning(`${apiError}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

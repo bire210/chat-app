@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useState } from "react";
 import { useChatContext } from "../context/ChatProviderContext";
 import { ToastContainer, toast } from "react-toastify";
@@ -7,6 +8,7 @@ import io from "socket.io-client";
 import { AxiosInstance } from "../api/apiInstance";
 
 const ENDPOINT = "https://chat-app-udbk.onrender.com";
+// const ENDPOINT = "http://localhost:8000";
 let socket;
 
 const ScrollableChatBox = ({ chatId }) => {
@@ -50,10 +52,8 @@ const ScrollableChatBox = ({ chatId }) => {
         { content: text, chatId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // setMessages([response.data.data],...messages);
       socket.emit("new message", response.data.data);
-      // Fetch messages again after sending a new message
-      fetchChats();
+      
     } catch (error) {
       console.error("Error sending message", error);
       toast.warning(`${error}`, {
@@ -91,10 +91,7 @@ const ScrollableChatBox = ({ chatId }) => {
     });
 
     socket.on("message recieved", (newMessageRecieved) => {
-      console.log("Message received:", newMessageRecieved);
-      setMessages([...messages,newMessageRecieved])
-      // Fetch messages again when a new message is received
-      fetchChats();
+      setMessages((oldMessages)=>setMessages([newMessageRecieved,...oldMessages,]));
     });
 
     return () => {
@@ -102,6 +99,9 @@ const ScrollableChatBox = ({ chatId }) => {
     };
   }, []);
 
+  useEffect(()=>{
+    console.log("reeeen*****************")
+  },[messages]);
   return (
     <>
       <ToastContainer />

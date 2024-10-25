@@ -1,62 +1,62 @@
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Input from '../../reusableComponents/Input';
-import Button from '../../reusableComponents/Button';
-import { AxiosInstance } from '../../api/apiInstance';
-import Cookies from 'js-cookie';
-import { useChatContext } from '../../context/ChatProviderContext';
+import Input from "../../reusableComponents/Input";
+import Button from "../../reusableComponents/Button";
+import { AxiosInstance } from "../../api/apiInstance";
+import Cookies from "js-cookie";
+import { useChatContext } from "../../context/ChatProviderContext";
 
 const Login = () => {
-    const [apiError, setError] = useState("");
-    const [loading,setLoading]=useState(false);
-    const { register, handleSubmit } = useForm();
-    const {setLoginUser,loginUser}=useChatContext()
-    const navigate=useNavigate();
-    const create = async (data) => {
-      try {
-        setLoading(true);
-        const response = await AxiosInstance.post(
-          "/user/login",data
-        );
-        setLoading(false);
-        toast.success("Login success", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        Cookies.set("token",response.data.data.token);
-        Cookies.set("user",JSON.stringify(response.data.data.user));
-         setLoginUser(response.data.data.user);
-         navigate("/");
-      } catch (error) {
-        console.error(error,"***********************888");
-        setError(error.response.data.error);
-        toast.warning(`${apiError}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        
-        setLoading(false);
-        console.error("Login failed", error);
-      }
-    };
+  const [apiError, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit } = useForm();
+  const { setLoginUser, loginUser } = useChatContext();
+  const navigate = useNavigate();
+  const create = async (data) => {
+    try {
+      setLoading(true);
+      const response = await AxiosInstance.post("/user/login", data);
+      setLoading(false);
+      toast.success("Login success", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      Cookies.set("token", response.data.data.token);
+      Cookies.set("user", JSON.stringify(response.data.data.user));
+      setLoginUser(response.data.data.user);
+      navigate("/");
+    } catch (error) {
+      console.error(error, "***********************888");
+      setError(error.response.data.error);
+      toast.warning(`${apiError}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+
+      setLoading(false);
+      console.error("Login failed", error);
+    }
+  };
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="w-full h-16  flex items-center justify-center rounded-xl bg-slate-600  font-bold text-2xl text-slate-200 " >Talk Here</div>
+      <div className="w-full h-16  flex items-center justify-center rounded-xl bg-slate-600  font-bold text-2xl text-slate-200 ">
+        Talk Here
+      </div>
       <ToastContainer />
       <div
         className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 mt-8 border border-black/10`}
@@ -65,15 +65,17 @@ const Login = () => {
           Sign In
         </h2>
         <p className="mt-2 text-center text-base text-black/60">
-          Yet  do not have an account?&nbsp;
+          Yet do not have an account?&nbsp;
           <Link
             to="/sign-up"
             className="font-medium text-primary transition-all duration-200 hover:underline"
           >
-           Do Sign Up
+            Do Sign Up
           </Link>
         </p>
-        {apiError && <p className="text-red-600 mt-8 text-center">{apiError}</p>}
+        {apiError && (
+          <p className="text-red-600 mt-8 text-center">{apiError}</p>
+        )}
 
         <form onSubmit={handleSubmit(create)}>
           <div className="space-y-5">
@@ -98,8 +100,8 @@ const Login = () => {
                 required: true,
               })}
             />
-           
-           <Button type="submit" className="w-full" disabled={loading}>
+
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <div className="flex items-center justify-center">
                   <svg
@@ -132,7 +134,7 @@ const Login = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
