@@ -1,4 +1,5 @@
-import React from "react";
+/* eslint-disable react/prop-types */
+
 import { useChatContext } from "../../context/ChatProviderContext";
 
 const ChatList = ({ chatList }) => {

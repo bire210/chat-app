@@ -15,9 +15,7 @@ const register = async (req, res) => {
       where: { email: userData.email },
     });
     if (foundUser) {
-      res
-        .status(409)
-        .json(new ApiResponse(409, foundUser, "user is already exist"));
+      throw new ApiError(409,"Email is Already exist")
     }
     const salt = await bcrypt.genSalt(5);
     const hashPassword = await bcrypt.hash(userData.password, salt);

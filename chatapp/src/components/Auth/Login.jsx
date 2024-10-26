@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,7 +13,7 @@ const Login = () => {
   const [apiError, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm();
-  const { setLoginUser, loginUser } = useChatContext();
+  const { setLoginUser } = useChatContext();
   const navigate = useNavigate();
   const create = async (data) => {
     try {
@@ -35,7 +35,6 @@ const Login = () => {
       setLoginUser(response.data.data.user);
       navigate("/");
     } catch (error) {
-      console.error(error, "***********************888");
       setError(error.response.data.error);
       toast.warning(`${apiError}`, {
         position: "top-right",
@@ -49,7 +48,7 @@ const Login = () => {
       });
 
       setLoading(false);
-      console.error("Login failed", error);
+     
     }
   };
   return (

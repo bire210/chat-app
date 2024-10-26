@@ -1,36 +1,39 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatContext } from "../context/ChatProviderContext";
 import { ToastContainer, toast } from "react-toastify";
-import { FaPaperPlane } from "react-icons/fa";
+import { FaPaperPlane, FaTrash } from "react-icons/fa";
 import Cookies from "js-cookie";
 import io from "socket.io-client";
 import { AxiosInstance } from "../api/apiInstance";
 
-const ENDPOINT = "https://chat-app-udbk.onrender.com";
-// const ENDPOINT = "http://localhost:8000";
+// const ENDPOINT = "https://chat-app-udbk.onrender.com";
+const ENDPOINT = "http://localhost:8000";
 let socket;
 
 const ScrollableChatBox = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const [apiError, setApiError] = useState("");
   const { loginUser } = useChatContext();
   const chatEndRef = useRef(null);
   const token = Cookies.get("token") || "";
 
   const fetchChats = async () => {
     try {
+      setApiError("");
       const response = await AxiosInstance.get(`/message/${chatId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.data);
+
       setMessages(response.data.data);
       socket.emit("join chat", chatId);
     } catch (error) {
-      console.error("Error fetching messages", error);
-      toast.warning(`${error}`, {
+      setApiError(error.response.data.error);
+      toast.warning(`${apiError}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -40,6 +43,32 @@ const ScrollableChatBox = ({ chatId }) => {
         progress: undefined,
         theme: "light",
       });
+    } finally {
+      setApiError("");
+    }
+  };
+
+  const clearCurrentChat = async () => {
+    try {
+      setApiError("");
+      await AxiosInstance.delete(`chat/${chatId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setMessages([]);
+    } catch (error) {
+      setApiError(error.response.data.error);
+      toast.warning(`${apiError}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setApiError("");
     }
   };
 
@@ -53,7 +82,6 @@ const ScrollableChatBox = ({ chatId }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       socket.emit("new message", response.data.data);
-      
     } catch (error) {
       console.error("Error sending message", error);
       toast.warning(`${error}`, {
@@ -91,7 +119,9 @@ const ScrollableChatBox = ({ chatId }) => {
     });
 
     socket.on("message recieved", (newMessageRecieved) => {
-      setMessages((oldMessages)=>setMessages([newMessageRecieved,...oldMessages,]));
+      setMessages((oldMessages) =>
+        setMessages([newMessageRecieved, ...oldMessages])
+      );
     });
 
     return () => {
@@ -99,9 +129,9 @@ const ScrollableChatBox = ({ chatId }) => {
     };
   }, []);
 
-  useEffect(()=>{
-    console.log("reeeen*****************")
-  },[messages]);
+  useEffect(() => {
+    console.log("reeeen*****************");
+  }, [messages]);
   return (
     <>
       <ToastContainer />
@@ -112,7 +142,9 @@ const ScrollableChatBox = ({ chatId }) => {
             <div
               key={message.id}
               className={`flex items-end mb-4 ${
-                message.senderId === loginUser.id ? "justify-end" : "justify-start"
+                message.senderId === loginUser.id
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               {message.senderId !== loginUser.id && (
@@ -141,10 +173,17 @@ const ScrollableChatBox = ({ chatId }) => {
             </div>
           ))}
       </div>
-      <div className="flex flex-col items-center w-full">
+      <div className="flex flex-row items-center justify-between w-full">
+        <button
+          onClick={clearCurrentChat}
+          className="flex items-center text-red-500 hover:text-red-700"
+        >
+          <FaTrash className="mr-1" />
+          Clear Chat
+        </button>
         <form
           onSubmit={handleSubmit}
-          className="flex items-center w-full border border-gray-300 rounded-full p-2 shadow-sm"
+          className="flex items-center w-[87%] border border-gray-300 rounded-full p-2 shadow-sm"
         >
           <input
             type="text"

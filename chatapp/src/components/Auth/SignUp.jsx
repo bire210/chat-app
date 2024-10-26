@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { ToastContainer, toast } from "react-toastify";
@@ -9,7 +9,7 @@ import { uploadImageToCloudinary } from "../../utils/imageHandle";
 import { AxiosInstance } from "../../api/apiInstance";
 
 function SignUp() {
-  const [error, setError] = useState("");
+  const [apiError, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const { register, handleSubmit, setValue } = useForm();
   const navigate=useNavigate()
@@ -36,7 +36,7 @@ function SignUp() {
       } catch (error) {
         console.error(error);
         setError(error.message);
-        toast.warning(`${error}`, {
+        toast.warning(`${apiError}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -56,7 +56,7 @@ function SignUp() {
     console.log("data  8888888888",data)
     try {
       
-      const response = await AxiosInstance.post(
+      await AxiosInstance.post(
         "/user/sign-up",data
       );
       toast.success("Registration is done", {
@@ -71,9 +71,9 @@ function SignUp() {
       });
       navigate("/login");
     } catch (error) {
-      console.error(error,"***********************888");
+      // console.error(error.response.data,"***********************888");
       setError(error.response.data.error);
-      toast.warning(`${error}`, {
+      toast.warning(`${apiError}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -83,7 +83,7 @@ function SignUp() {
         progress: undefined,
         theme: "light",
       });
-      console.error("Login failed", error);
+      // console.error("Login failed", error);
     }
   };
 
@@ -108,7 +108,7 @@ function SignUp() {
             Sign In
           </Link>
         </p>
-        {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
+       
 
         <form onSubmit={handleSubmit(create)}>
           <div className="space-y-3">
@@ -141,7 +141,7 @@ function SignUp() {
               })}
             />
             <Input
-              label="Select your profile :"
+              label="Select your profile Picture :"
               type="file"
               className="mb-2"
               accept="image/png, image/jpg, image/jpeg, image/gif"

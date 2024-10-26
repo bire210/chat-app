@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import { Navigate, Outlet } from "react-router-dom";
 import Cookies from "js-cookie";
 const PrivateRoute = ({children}) => {

@@ -306,10 +306,38 @@ const removeMemberFromGroupChat = async (req, res) => {
   }
 };
 
+const deleteChat=async(req,res)=>{
+  
+  try {
+    const {chatId}=req.params;
+    if(!chatId){
+      throw new ApiError(404,"Please send the chat Id");
+    }
+
+    const checkChat= await prisma.chat.findUnique({
+      where:{
+        id:+chatId
+      }
+    })
+    if(!checkChat){
+      throw new ApiError(404,"Chat is not Found");
+    }
+   const deletedChat= await prisma.message.deleteMany({
+      where:{
+        chatId:+chatId
+      }
+    })
+    res.status(200).json(new ApiResponse(200,"","Your chat is deleted"))
+  } catch (error) {
+    console.log(error)
+    res.status(error.statusCode||500).json(new ApiError(error.statusCode||500,error.error||"Internal Server Error"))
+  }
+}
 export {
   accessChat,
   allChatsOfLoginedUser,
   createGroupChat,
   addMemberToGroupChat,
   removeMemberFromGroupChat,
+  deleteChat
 };

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useChatContext } from "../context/ChatProviderContext";
 import { AxiosInstance } from "../api/apiInstance";
 import { ToastContainer, toast } from "react-toastify";
@@ -8,10 +8,12 @@ import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import ChatBox from "../components/ChatBox";
 import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
 
 const ChatPage = () => {
   const [query, setQuery] = useState("");
   const [apiError, setError] = useState("");
+  const navigate = useNavigate();
   const [searchUsers, setSearchUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatList, setChatLists] = useState(null);
@@ -92,6 +94,14 @@ const ChatPage = () => {
     setIsModalOpen(false);
   };
 
+  const logOUtHandle = async () => {
+    Cookies.remove("token", { path: "/" });
+    Cookies.remove("user", { path: "/" });
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
+  };
   return (
     <div>
       <ToastContainer />
@@ -162,7 +172,7 @@ const ChatPage = () => {
           <img
             src={loginUser?.image}
             alt={loginUser?.name}
-            className="rounded-xl w-full h-full object-cover hover:cursor-pointer"
+            className="rounded-full w-full h-full object-cover hover:cursor-pointer"
           />
         </div>
       </div>
@@ -233,15 +243,25 @@ const ChatPage = () => {
         </div>
       </div>
 
-      <Modal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)}>
+      <Modal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      >
         <div className="flex flex-col items-center w-[350px] h-[250px]">
           <img
             src={loginUser?.image}
             alt={loginUser?.name}
             className="w-44 h-44 rounded-full mb-4"
           />
-          <p className="text-xl font-semibold">{loginUser?.name}</p>
-          <p className="text-sm text-gray-600">{loginUser?.email}</p>
+          <div className="flex flex-row w-[50%] mx-auto items-center justify-between">
+            <p className="text-xl font-semibold">{loginUser?.name}</p>
+            <button
+              onClick={logOUtHandle}
+              className="text-2xl font-semibold text-red-600"
+            >
+              Log Out
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

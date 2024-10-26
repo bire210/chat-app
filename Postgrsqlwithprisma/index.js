@@ -52,6 +52,7 @@ if (cluster.isPrimary) {
       console.log(`Server is running over ${PORT}`);
     } catch (error) {
       console.log(`Database is not connected`, error.message);
+      process.exit(0);
     }
   });
 

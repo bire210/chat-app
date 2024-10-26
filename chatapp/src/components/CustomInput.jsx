@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import  { useState, useRef, useEffect } from 'react';
 import EmojiPicker from 'emoji-picker-react';
 import { useDropzone } from 'react-dropzone';
 import { FaPaperclip, FaSmile, FaPaperPlane } from 'react-icons/fa';
