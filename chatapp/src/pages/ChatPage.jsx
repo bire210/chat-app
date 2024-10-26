@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import ChatBox from "../components/ChatBox";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
+import { FaPlus } from "react-icons/fa";
 
 const ChatPage = () => {
   const [query, setQuery] = useState("");
@@ -18,11 +19,16 @@ const ChatPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chatList, setChatLists] = useState(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isCreateGroup, setCreateGroup] = useState(false);
+  const [selectedFriends, setSelectedFriends] = useState([]);
+  const [selectedFriendsIds, setSelectedFriendsIds] = useState([]);
+  const [channelName, setChannelName] = useState("");
 
   const { loginUser, selectedChat, setSelectedChat } = useChatContext();
   const token = Cookies.get("token") || "";
   const fetchChats = async () => {
     try {
+      setError("");
       const response = await AxiosInstance.get(`/chat/all-chats`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -31,6 +37,7 @@ const ChatPage = () => {
       setChatLists(response.data.data);
     } catch (error) {
       console.error("Error fetching chats", error);
+
     }
   };
 
@@ -41,6 +48,7 @@ const ChatPage = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
+      setError("");
       const response = await AxiosInstance.get(`/user/find-friend?q=${query}`);
       setSearchUsers(response.data.data);
       setQuery("");
@@ -58,6 +66,7 @@ const ChatPage = () => {
         progress: undefined,
         theme: "light",
       });
+      setError("");
     }
   };
 
@@ -67,6 +76,7 @@ const ChatPage = () => {
 
   const accessChatHandel = async (user) => {
     try {
+      setError("");
       const response = await AxiosInstance.post(
         `/chat/access-chat`,
         { userId: user.id },
@@ -80,7 +90,7 @@ const ChatPage = () => {
     } catch (error) {
       console.error("Error fetching quotes", error);
       setError(error.response.data.error);
-      toast.warning(`${error}`, {
+      toast.warning(`${apiError}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -94,6 +104,59 @@ const ChatPage = () => {
     setIsModalOpen(false);
   };
 
+  const handleCheckboxChange = (chat) => {
+    const chatId = chat.id;
+    console.log("select chat of frined", chatId);
+    setSelectedFriends((prevSelected) =>
+      prevSelected.includes(chatId)
+        ? prevSelected.filter((id) => id !== chatId)
+        : [...prevSelected, chatId]
+    );
+    setSelectedFriendsIds((prevSelected) => {
+      const friendId =
+        loginUser.id === chat.users[0].id ? chat.users[1].id : chat.users[0].id;
+      return prevSelected.includes(friendId)
+        ? prevSelected.filter((id) => id !== friendId)
+        : [...prevSelected, friendId];
+    });
+  };
+
+  const handleCreateGroup = async (e) => {
+    e.preventDefault();
+    console.log(selectedFriendsIds);
+    
+    try {
+      setError("");
+      const response = await AxiosInstance.post(
+        `/chat/create-group`,
+        { users: selectedFriendsIds, groupName: channelName },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setChatLists([...chatList, response.data.data]);
+    } catch (error) {
+      console.error("Error fetching quotes", error.response.data.error);
+      setError(error.response.data.error||"Failed to create group");
+      toast.warning(`${error.response.data.error}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } finally {
+      setCreateGroup(false);
+      setChannelName("");
+      setSelectedFriendsIds([]);
+      setSelectedFriends([]);
+    }
+  };
   const logOUtHandle = async () => {
     Cookies.remove("token", { path: "/" });
     Cookies.remove("user", { path: "/" });
@@ -105,24 +168,25 @@ const ChatPage = () => {
   return (
     <div>
       <ToastContainer />
-      <div className="relative h-20 m-4 grid gap-4 grid-cols-12">
-        <div className="relative h-full bg-slate-500 md:col-span-4 col-span-9 flex items-center p-2">
+      <div className="relative h-16 m-4 grid gap-4 grid-cols-12 bg-gray-100  rounded-lg shadow-md">
+        {/* Search Input and Button */}
+        <div className="relative h-full bg-gray-800 md:col-span-4 col-span-9 flex items-center p-2 rounded-lg shadow-sm">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by email or name"
-            className="border p-2 w-full"
+            className="border border-gray-400 rounded-lg p-2 w-full bg-gray-700 text-white outline-none placeholder-gray-300"
           />
           <button
             onClick={handleSearch}
-            className="bg-blue-500 text-white p-2 ml-2 flex items-center justify-center"
+            className="bg-blue-500 text-white p-2 ml-2 rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="size-6"
+              className="w-6 h-6"
             >
               <path
                 fillRule="evenodd"
@@ -131,14 +195,15 @@ const ChatPage = () => {
               />
             </svg>
           </button>
+          {/* Modal */}
           {isModalOpen && (
-            <div className="absolute top-full left-0 right-0 bg-white p-4 rounded-lg shadow-lg">
-              <h2 className="text-xl font-bold mb-4">Friends</h2>
+            <div className="absolute top-full left-0 right-0 bg-white p-4 rounded-lg shadow-lg mt-2">
+              <h2 className="text-xl font-bold text-gray-700 mb-4">Friends</h2>
               <ul>
                 {searchUsers.map((user) => (
                   <li
                     key={user.id}
-                    className="flex items-center p-2 hover:bg-gray-200 cursor-pointer"
+                    className="flex items-center p-2 hover:bg-gray-200 cursor-pointer rounded-lg"
                     onClick={() => accessChatHandel(user)}
                   >
                     <img
@@ -147,7 +212,7 @@ const ChatPage = () => {
                       className="w-10 h-10 rounded-full mr-4"
                     />
                     <div>
-                      <p className="font-semibold">{user.name}</p>
+                      <p className="font-semibold text-gray-800">{user.name}</p>
                       <p className="text-sm text-gray-600">{user.email}</p>
                     </div>
                   </li>
@@ -155,67 +220,135 @@ const ChatPage = () => {
               </ul>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="mt-4 bg-red-500 text-white p-2 rounded"
+                className="mt-4 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition duration-200 ease-in-out"
               >
                 Close
               </button>
             </div>
           )}
         </div>
-        <div className="hidden justify-center items-center text-center bg-slate-600 font-bold text-xl text-slate-200 h-full md:col-span-7 md:flex">
+
+        {/* Talk Here Section */}
+        <div className="hidden md:col-span-7 md:flex justify-center items-center text-center bg-gray-700 font-bold text-xl text-gray-200 h-full rounded-lg shadow-sm">
           Talk Here
         </div>
+
+        {/* Profile Image Section */}
         <div
-          className=" w-20 h-20 md:col-span-1 col-span-3 block "
+          className="w-16 h-16 md:col-span-1 col-span-3 block rounded-full overflow-hidden cursor-pointer"
           onClick={() => setIsProfileModalOpen(true)}
         >
           <img
             src={loginUser?.image}
             alt={loginUser?.name}
-            className="rounded-full w-full h-full object-cover hover:cursor-pointer"
+            className="w-full h-full object-cover hover:opacity-90 transition duration-200 ease-in-out"
           />
         </div>
       </div>
 
-      <div className="h-[80vh] m-4 grid gap-4 grid-cols-12">
-        <div className="col-span-12 sm:col-span-4 bg-slate-500 sm:block p-3">
+      <div className="h-[80vh] m-4 grid gap-4 grid-cols-12 bg-gray-100 rounded-lg shadow-lg p-2">
+        <div className="col-span-12 sm:col-span-4 bg-gray-800 p-4 rounded-lg shadow-md overflow-y-auto">
           {chatList && (
             <>
-              <h2 className="m-2 text-xl text-yellow-50">Chats</h2>
-              <ul>
-                {chatList.map((chat) => {
-                  return chat.isGroupChat === true ? (
-                    <li
-                      key={chat.id}
-                      className="flex items-center p-2 border rounded-lg hover:bg-gray-200 cursor-pointer my-1"
-                      onClick={() => handleUserSelect(chat)}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-yellow-50">Chats</h2>
+                <button
+                  onClick={() => setCreateGroup(true)}
+                  className="flex items-center px-3 py-2 bg-blue-500 text-white rounded-lg shadow-sm hover:bg-blue-600 transition duration-200 ease-in-out"
+                >
+                  <FaPlus className="mr-2" />
+                  <span>New Group</span>
+                </button>
+              </div>
+              <ul className="w-full">
+                {isCreateGroup ? (
+                  <>
+                    <span className="block text-lg font-semibold text-blue-200 mb-3 text-center">
+                      Select Your Friends
+                    </span>
+                    {chatList.filter((chat)=>!chat.isGroupChat).map((chat) => (
+                      <li
+                        key={chat.id}
+                        className="flex items-center p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 cursor-pointer mb-2 transition"
+                      >
+                        <img
+                          src={
+                            loginUser.id === chat.users[0].id
+                              ? chat.users[1].image
+                              : chat.users[0].image
+                          }
+                          alt={
+                            loginUser.id === chat.users[0].id
+                              ? chat.users[1].name
+                              : chat.users[0].name
+                          }
+                          className="w-10 h-10 rounded-full mr-4"
+                        />
+                        <div className="flex-1">
+                          <p className="font-semibold">
+                            {loginUser.id === chat.users[0].id
+                              ? chat.users[1].name
+                              : chat.users[0].name}
+                          </p>
+                          <p className="text-sm text-gray-300">
+                            {chat?.latestMessage?.content || ""}
+                          </p>
+                        </div>
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 rounded-full border border-gray-300 checked:bg-blue-500 checked:border-transparent cursor-pointer"
+                          checked={selectedFriends.includes(chat.id)}
+                          onChange={() => handleCheckboxChange(chat)}
+                        />
+                      </li>
+                    ))}
+
+                    <form
+                      onSubmit={handleCreateGroup}
+                      className="flex flex-col items-center w-full bg-gray-700 rounded-lg p-4 shadow-md mt-4"
                     >
-                      <img
-                        src={chat.groupImage}
-                        alt={chat.chatName}
-                        className="w-10 h-10 rounded-full mr-4"
+                      <input
+                        type="text"
+                        value={channelName}
+                        onChange={(e) => setChannelName(e.target.value)}
+                        placeholder="Enter channel name"
+                        className="w-full p-2 mb-4 border border-gray-300 rounded-md outline-none"
                       />
-                      <div>
-                        <p className="font-semibold">{chat.chatName}</p>
-                        <p className="text-sm text-gray-600">
-                          {chat?.latestMessage?.content || ""}
-                        </p>
+                      <div className="flex justify-between w-full">
+                        <button
+                          onClick={() => setCreateGroup(false)}
+                          className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200 ease-in-out"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200 ease-in-out"
+                        >
+                          Create
+                        </button>
                       </div>
-                    </li>
-                  ) : (
+                    </form>
+                  </>
+                ) : (
+                  chatList.map((chat) => (
                     <li
                       key={chat.id}
-                      className="flex items-center p-2 border rounded-lg hover:bg-gray-200 cursor-pointer my-1"
+                      className="flex items-center p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 cursor-pointer mb-2 transition"
                       onClick={() => handleUserSelect(chat)}
                     >
                       <img
                         src={
-                          loginUser.id === chat.users[0].id
+                          chat.isGroupChat
+                            ? chat.groupImage
+                            : loginUser.id === chat.users[0].id
                             ? chat.users[1].image
                             : chat.users[0].image
                         }
                         alt={
-                          loginUser.id === chat.users[0].id
+                          chat.isGroupChat
+                            ? chat.chatName
+                            : loginUser.id === chat.users[0].id
                             ? chat.users[1].name
                             : chat.users[0].name
                         }
@@ -223,22 +356,24 @@ const ChatPage = () => {
                       />
                       <div>
                         <p className="font-semibold">
-                          {loginUser.id === chat.users[0].id
+                          {chat.isGroupChat
+                            ? chat.chatName
+                            : loginUser.id === chat.users[0].id
                             ? chat.users[1].name
                             : chat.users[0].name}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-300">
                           {chat?.latestMessage?.content || ""}
                         </p>
                       </div>
                     </li>
-                  );
-                })}
+                  ))
+                )}
               </ul>
             </>
           )}
         </div>
-        <div className="hidden col-span-12 sm:col-span-8 bg-blue-100 sm:block">
+        <div className="hidden sm:block col-span-12 sm:col-span-8 bg-white rounded-lg shadow-md p-4">
           {selectedChat && <ChatBox selectedChat={selectedChat} />}
         </div>
       </div>
@@ -247,17 +382,23 @@ const ChatPage = () => {
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
       >
-        <div className="flex flex-col items-center w-[350px] h-[250px]">
+        <div className="flex flex-col items-center w-[350px] h-[250px] bg-gray-800 border border-gray-700 rounded-lg p-4 shadow-md">
+          {/* Profile Image */}
           <img
             src={loginUser?.image}
             alt={loginUser?.name}
-            className="w-44 h-44 rounded-full mb-4"
+            className="w-44 h-44 rounded-full mb-4 border-4 border-gray-600 shadow-lg"
           />
-          <div className="flex flex-row w-[50%] mx-auto items-center justify-between">
-            <p className="text-xl font-semibold">{loginUser?.name}</p>
+
+          {/* Name and Logout Button */}
+
+          <div className="flex justify-between w-full">
+            <p className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200 ease-in-out">
+              {loginUser?.name}
+            </p>
             <button
               onClick={logOUtHandle}
-              className="text-2xl font-semibold text-red-600"
+              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200 ease-in-out"
             >
               Log Out
             </button>

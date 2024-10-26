@@ -134,8 +134,11 @@ const ScrollableChatBox = ({ chatId }) => {
   }, [messages]);
   return (
     <>
-      <ToastContainer />
-      <div className="h-96 overflow-y-auto flex flex-col-reverse p-4 bg-gray-100 border rounded-md">
+      {/* Toast Notifications */}
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
+
+      {/* Messages Section */}
+      <div className="h-96 overflow-y-auto flex flex-col-reverse p-4 bg-gray-800 border border-gray-700 rounded-md shadow-inner">
         <div ref={chatEndRef}></div>
         {messages &&
           messages.map((message) => (
@@ -158,7 +161,7 @@ const ScrollableChatBox = ({ chatId }) => {
                 className={`max-w-xs break-words px-4 py-2 rounded-lg shadow-md ${
                   message.senderId === loginUser.id
                     ? "bg-blue-500 text-white"
-                    : "bg-white text-gray-800"
+                    : "bg-gray-700 text-gray-200"
                 }`}
               >
                 {message.content}
@@ -173,28 +176,33 @@ const ScrollableChatBox = ({ chatId }) => {
             </div>
           ))}
       </div>
-      <div className="flex flex-row items-center justify-between w-full">
+
+      {/* Input and Clear Chat Section */}
+      <div className="flex flex-row items-center justify-between w-full mt-4">
+        {/* Clear Chat Button */}
         <button
           onClick={clearCurrentChat}
-          className="flex items-center text-red-500 hover:text-red-700"
+          className="flex items-center text-red-500 hover:text-red-700 transition-colors duration-200"
         >
           <FaTrash className="mr-1" />
           Clear Chat
         </button>
+
+        {/* Message Input Form */}
         <form
           onSubmit={handleSubmit}
-          className="flex items-center w-[87%] border border-gray-300 rounded-full p-2 shadow-sm"
+          className="flex items-center w-[87%] border border-gray-600 bg-gray-700 rounded-full p-2 shadow-sm"
         >
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message"
-            className="flex-1 border-none outline-none p-2 text-lg"
+            className="flex-1 bg-gray-700 border-none outline-none p-2 text-lg text-gray-200 placeholder-gray-400 rounded-full"
           />
           <button
             type="submit"
-            className="text-2xl text-blue-500 hover:text-blue-700 mx-2"
+            className="text-2xl text-blue-500 hover:text-blue-700 transition-colors duration-200 mx-2"
           >
             <FaPaperPlane />
           </button>
