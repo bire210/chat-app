@@ -144,7 +144,7 @@ const ChatBox = ({ selectedChat }) => {
         onClose={() => setIsProfileModalOpen(false)}
       >
         {selectedChat.isGroupChat ? (
-          <div className="flex flex-col items-center w-[650px] min-h-[350px] bg-gray-800 rounded-lg shadow-lg p-4">
+          <div className="flex flex-col items-center w-[100%] min-h-[350px] bg-gray-800 rounded-lg shadow-lg p-4">
             {/* Group Header */}
             <div className="border-b border-gray-700 flex justify-between w-full items-center p-2">
               <img
@@ -213,7 +213,7 @@ const ChatBox = ({ selectedChat }) => {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center w-[350px] h-[250px] bg-gray-800 rounded-lg shadow-lg p-4">
+          <div className="flex flex-col items-center w-[100%] h-[250px] bg-gray-800 rounded-lg shadow-lg p-4">
             <img
               src={
                 loginUser.id === selectedChat.users[0].id

@@ -16,6 +16,8 @@ const ScrollableChatBox = ({ chatId }) => {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
   const [apiError, setApiError] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [typerName, setTyperName] = useState("");
   const { loginUser } = useChatContext();
   const chatEndRef = useRef(null);
   const token = Cookies.get("token") || "";
@@ -94,8 +96,10 @@ const ScrollableChatBox = ({ chatId }) => {
         progress: undefined,
         theme: "light",
       });
+    } finally {
+      setText("");
+      setIsTyping(false);
     }
-    setText("");
   };
 
   useEffect(() => {
@@ -121,6 +125,14 @@ const ScrollableChatBox = ({ chatId }) => {
     socket.on("message recieved", (newMessageRecieved) => {
       // console.log("new message", newMessageRecieved);
       setMessages((oldMessages) => [newMessageRecieved, ...oldMessages]);
+    });
+
+    socket.on("typing", (name) => {
+      console.log(name, "is typing ************************8");
+      setTyperName(name);
+      setIsTyping(true);
+      const typingTimeout = setTimeout(() => setIsTyping(false), 3000);
+      return () => clearTimeout(typingTimeout);
     });
 
     return () => {
@@ -184,21 +196,35 @@ const ScrollableChatBox = ({ chatId }) => {
           className="flex items-center text-red-500 hover:text-red-700 transition-colors duration-200"
         >
           <FaTrash className="mr-1" />
-          Clear Chat
+          Clear
         </button>
 
         {/* Message Input Form */}
         <form
           onSubmit={handleSubmit}
-          className="flex items-center w-[87%] border border-gray-600 bg-gray-700 rounded-full p-2 shadow-sm"
+          className="flex items-center w-[87%] border border-gray-600 bg-gray-700 rounded-full p-1 shadow-sm"
         >
           <input
             type="text"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setText(e.target.value);
+              socket.emit("typing", { chatId, name: loginUser.name });
+            }}
             placeholder="Type a message"
-            className="flex-1 bg-gray-700 border-none outline-none p-2 text-lg text-gray-200 placeholder-gray-400 rounded-full"
+            className="flex w-full  bg-gray-700 border-none outline-none p-1 text-lg text-gray-200 placeholder-gray-400 rounded-full"
           />
+
+          {isTyping && (
+            <div className="text-sm text-green-600 mr-2 flex items-center space-x-1 animate-pulse">
+              <span>{typerName}</span>
+              <div className="flex space-x-1">
+                <div className="w-1 h-1 bg-green-600 rounded-full animate-bounce" />
+                <div className="w-1 h-1 bg-green-600 rounded-full animate-bounce delay-100" />
+                <div className="w-1 h-1 bg-green-600 rounded-full animate-bounce delay-200" />
+              </div>
+            </div>
+          )}
           <button
             type="submit"
             className="text-2xl text-blue-500 hover:text-blue-700 transition-colors duration-200 mx-2"

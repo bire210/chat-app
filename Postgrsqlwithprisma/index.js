@@ -86,6 +86,12 @@ if (cluster.isPrimary) {
 
     });
 
+    socket.on("typing",({chatId,name})=>{
+      console.log(chatId,name);
+      socket.join(chatId);
+      socket.broadcast.to(chatId).emit("typing",name);
+    })
+
     socket.on("disconnect", () => {
       console.log("Disconnected", socket.id);
     });
