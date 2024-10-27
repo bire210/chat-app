@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react/prop-types */
+import  { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 const ChatPorviderContext = createContext();

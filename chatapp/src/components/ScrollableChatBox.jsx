@@ -137,7 +137,7 @@ const ScrollableChatBox = ({ chatId }) => {
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
 
       {/* Messages Section */}
-      <div className="h-96 overflow-y-auto flex flex-col-reverse p-4 bg-gray-800 border border-gray-700 rounded-md shadow-inner">
+      <div className="h-[75%] overflow-y-auto flex flex-col-reverse p-4 bg-gray-800 border border-gray-700 rounded-md shadow-inner">
         <div ref={chatEndRef}></div>
         {messages &&
           messages.map((message) => (

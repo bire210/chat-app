@@ -9,16 +9,16 @@ import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { AxiosInstance } from "../api/apiInstance";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { FaArrowLeft } from "react-icons/fa";
 
 const ChatBox = ({ selectedChat }) => {
   const [chatId, setChatId] = useState(null);
   const [groupMembers, setGroupMember] = useState([]);
   const [groupMembersId, setGroupMemberIds] = useState([]);
   const [friends, setFriends] = useState(null);
-  const { loginUser } = useChatContext();
+  const { loginUser, setSelectedChat } = useChatContext();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const token = Cookies.get("token") || "";
-
 
   const fetchFriends = useCallback(async () => {
     try {
@@ -36,12 +36,13 @@ const ChatBox = ({ selectedChat }) => {
       setChatId(selectedChat.id);
       setGroupMember(selectedChat.isGroupChat ? selectedChat.users : []);
       setGroupMemberIds(
-        selectedChat.isGroupChat ? selectedChat.users.map((friend) => friend.id) : []
+        selectedChat.isGroupChat
+          ? selectedChat.users.map((friend) => friend.id)
+          : []
       );
       if (selectedChat.isGroupChat) fetchFriends();
     }
-  }, [selectedChat,fetchFriends]);
-
+  }, [selectedChat, fetchFriends]);
 
   const onAddToGroup = async (userId) => {
     try {
@@ -51,7 +52,7 @@ const ChatBox = ({ selectedChat }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setGroupMember(response.data.data.users);
-      setGroupMemberIds(response.data.data.users.map((friend)=>friend.id));
+      setGroupMemberIds(response.data.data.users.map((friend) => friend.id));
     } catch (error) {
       toast.warning(error.response.data.error, {
         position: "top-right",
@@ -74,7 +75,7 @@ const ChatBox = ({ selectedChat }) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setGroupMember(response.data.data.users);
-        setGroupMemberIds(response.data.data.users.map((friend)=>friend.id));
+        setGroupMemberIds(response.data.data.users.map((friend) => friend.id));
       } catch (error) {
         toast.warning(error.response.data.error, {
           position: "top-right",
@@ -93,16 +94,20 @@ const ChatBox = ({ selectedChat }) => {
   return (
     <>
       {/* Chat Header Section */}
-      <div
-        className="flex justify-between m-2 border border-gray-800 text-center items-center rounded-md bg-gray-700 p-2"
-        onClick={() => setIsProfileModalOpen(true)}
-      >
+      <div className="flex justify-between m-2 border border-gray-800 text-center items-center rounded-md bg-gray-700 p-2">
+        {/* Left Arrow Icon for small devices only */}
+        <FaArrowLeft
+          className="text-gray-200 text-xl ml-2 sm:hidden hover:cursor-pointer"
+          onClick={() => setSelectedChat(null)} // Optional: Clears the selected chat on click
+        />
+
         {selectedChat.isGroupChat ? (
           <>
             <h1 className="m-2 text-gray-200 font-semibold">
               {selectedChat.chatName}
             </h1>
             <img
+              onClick={() => setIsProfileModalOpen(true)}
               src={selectedChat.groupImage}
               alt={selectedChat.chatName}
               className="w-10 h-10 rounded-full mr-4 hover:cursor-pointer"
@@ -116,6 +121,7 @@ const ChatBox = ({ selectedChat }) => {
                 : selectedChat.users[0].name}
             </h1>
             <img
+              onClick={() => setIsProfileModalOpen(true)}
               src={
                 loginUser.id === selectedChat.users[0].id
                   ? selectedChat.users[1].image
@@ -161,7 +167,11 @@ const ChatBox = ({ selectedChat }) => {
                   key={user.id}
                   className="flex mt-2 border border-gray-700 p-2 rounded-md justify-between items-center w-[45%] bg-gray-700"
                 >
-                  <img src={user.image} alt={user.name} className="w-7 h-7 rounded-full" />
+                  <img
+                    src={user.image}
+                    alt={user.name}
+                    className="w-7 h-7 rounded-full"
+                  />
                   <p className="text-gray-200 text-sm">{user.name}</p>
                   <button
                     onClick={() => handleDelete(user.id)}
@@ -186,7 +196,11 @@ const ChatBox = ({ selectedChat }) => {
                       key={friend.id}
                       className="flex mt-2 border border-gray-700 p-2 rounded-md justify-between items-center w-[45%] bg-gray-700"
                     >
-                      <img src={friend.image} alt={friend.name} className="w-7 h-7 rounded-full" />
+                      <img
+                        src={friend.image}
+                        alt={friend.name}
+                        className="w-7 h-7 rounded-full"
+                      />
                       <p className="text-gray-200 text-sm">{friend.name}</p>
                       <button
                         onClick={() => onAddToGroup(friend.id)}
@@ -223,7 +237,7 @@ const ChatBox = ({ selectedChat }) => {
       </Modal>
 
       {/* Chat Messages Section */}
-      <div className="mx-2 border border-gray-800 bg-gray-700 h-96 rounded-md shadow-inner overflow-y-auto">
+      <div className="mx-2 border border-gray-800 bg-gray-700 h-80 rounded-md shadow-inner overflow-y-auto">
         {chatId && <ScrollableChatBox chatId={chatId} />}
       </div>
     </>

@@ -37,7 +37,6 @@ const ChatPage = () => {
       setChatLists(response.data.data);
     } catch (error) {
       console.error("Error fetching chats", error);
-
     }
   };
 
@@ -123,8 +122,8 @@ const ChatPage = () => {
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
-    console.log(selectedFriendsIds);
-    
+    // console.log(selectedFriendsIds);
+
     try {
       setError("");
       const response = await AxiosInstance.post(
@@ -138,8 +137,8 @@ const ChatPage = () => {
       );
       setChatLists([...chatList, response.data.data]);
     } catch (error) {
-      console.error("Error fetching quotes", error.response.data.error);
-      setError(error.response.data.error||"Failed to create group");
+      // console.error("Error fetching quotes", error.response.data.error);
+      setError(error.response.data.error || "Failed to create group");
       toast.warning(`${error.response.data.error}`, {
         position: "top-right",
         autoClose: 5000,
@@ -247,7 +246,11 @@ const ChatPage = () => {
       </div>
 
       <div className="h-[80vh] m-4 grid gap-4 grid-cols-12 bg-gray-100 rounded-lg shadow-lg p-2">
-        <div className="col-span-12 sm:col-span-4 bg-gray-800 p-4 rounded-lg shadow-md overflow-y-auto">
+        <div
+          className={`${
+            selectedChat ? "hidden" : "block"
+          } sm:block col-span-12 sm:col-span-4 bg-gray-800 p-4 rounded-lg shadow-md overflow-y-auto`}
+        >
           {chatList && (
             <>
               <div className="flex justify-between items-center mb-4">
@@ -266,42 +269,44 @@ const ChatPage = () => {
                     <span className="block text-lg font-semibold text-blue-200 mb-3 text-center">
                       Select Your Friends
                     </span>
-                    {chatList.filter((chat)=>!chat.isGroupChat).map((chat) => (
-                      <li
-                        key={chat.id}
-                        className="flex items-center p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 cursor-pointer mb-2 transition"
-                      >
-                        <img
-                          src={
-                            loginUser.id === chat.users[0].id
-                              ? chat.users[1].image
-                              : chat.users[0].image
-                          }
-                          alt={
-                            loginUser.id === chat.users[0].id
-                              ? chat.users[1].name
-                              : chat.users[0].name
-                          }
-                          className="w-10 h-10 rounded-full mr-4"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold">
-                            {loginUser.id === chat.users[0].id
-                              ? chat.users[1].name
-                              : chat.users[0].name}
-                          </p>
-                          <p className="text-sm text-gray-300">
-                            {chat?.latestMessage?.content || ""}
-                          </p>
-                        </div>
-                        <input
-                          type="checkbox"
-                          className="w-5 h-5 rounded-full border border-gray-300 checked:bg-blue-500 checked:border-transparent cursor-pointer"
-                          checked={selectedFriends.includes(chat.id)}
-                          onChange={() => handleCheckboxChange(chat)}
-                        />
-                      </li>
-                    ))}
+                    {chatList
+                      .filter((chat) => !chat.isGroupChat)
+                      .map((chat) => (
+                        <li
+                          key={chat.id}
+                          className="flex items-center p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 cursor-pointer mb-2 transition"
+                        >
+                          <img
+                            src={
+                              loginUser.id === chat.users[0].id
+                                ? chat.users[1].image
+                                : chat.users[0].image
+                            }
+                            alt={
+                              loginUser.id === chat.users[0].id
+                                ? chat.users[1].name
+                                : chat.users[0].name
+                            }
+                            className="w-10 h-10 rounded-full mr-4"
+                          />
+                          <div className="flex-1">
+                            <p className="font-semibold">
+                              {loginUser.id === chat.users[0].id
+                                ? chat.users[1].name
+                                : chat.users[0].name}
+                            </p>
+                            <p className="text-sm text-gray-300">
+                              {chat?.latestMessage?.content || ""}
+                            </p>
+                          </div>
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 rounded-full border border-gray-300 checked:bg-blue-500 checked:border-transparent cursor-pointer"
+                            checked={selectedFriends.includes(chat.id)}
+                            onChange={() => handleCheckboxChange(chat)}
+                          />
+                        </li>
+                      ))}
 
                     <form
                       onSubmit={handleCreateGroup}
@@ -373,7 +378,12 @@ const ChatPage = () => {
             </>
           )}
         </div>
-        <div className="hidden sm:block col-span-12 sm:col-span-8 bg-white rounded-lg shadow-md p-4">
+
+        <div
+          className={`${
+            selectedChat ? "block" : "hidden"
+          } sm:block col-span-12 sm:col-span-8 bg-gray-800 rounded-lg shadow-md p-4`}
+        >
           {selectedChat && <ChatBox selectedChat={selectedChat} />}
         </div>
       </div>
