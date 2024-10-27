@@ -15,7 +15,7 @@ const register = async (req, res) => {
       where: { email: userData.email },
     });
     if (foundUser) {
-      throw new ApiError(409,"Email is Already exist")
+      throw new ApiError(409, "Email is Already exist");
     }
     const salt = await bcrypt.genSalt(5);
     const hashPassword = await bcrypt.hash(userData.password, salt);
@@ -134,4 +134,29 @@ const search = async (req, res) => {
       );
   }
 };
-export { register, login, search };
+
+const getAllFriends = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const foundUsers = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+      },
+    });
+
+    res.status(200).json(new ApiResponse(200, foundUsers, "Your friends"));
+  } catch (error) {
+    res
+      .status(error.statusCode || 500)
+      .json(
+        new ApiError(
+          error.statusCode || 500,
+          error.error || "Internal Server Error"
+        )
+      );
+  }
+};
+export { register, login, search, getAllFriends };

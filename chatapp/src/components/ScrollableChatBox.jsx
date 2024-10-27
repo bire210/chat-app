@@ -111,7 +111,7 @@ const ScrollableChatBox = ({ chatId }) => {
     socket.emit("setup", loginUser);
 
     socket.on("connect", () => {
-      console.log("Connected to server");
+      // console.log("Connected to server");
     });
 
     socket.on("connected", () => {
@@ -119,9 +119,8 @@ const ScrollableChatBox = ({ chatId }) => {
     });
 
     socket.on("message recieved", (newMessageRecieved) => {
-      setMessages((oldMessages) =>
-        setMessages([newMessageRecieved, ...oldMessages])
-      );
+      // console.log("new message", newMessageRecieved);
+      setMessages((oldMessages) => [newMessageRecieved, ...oldMessages]);
     });
 
     return () => {
@@ -130,7 +129,7 @@ const ScrollableChatBox = ({ chatId }) => {
   }, []);
 
   useEffect(() => {
-    console.log("reeeen*****************");
+    // console.log("reeeen*****************");
   }, [messages]);
   return (
     <>

@@ -79,7 +79,10 @@ if (cluster.isPrimary) {
     socket.on("new message", (newMessageRecieved) => {
       console.log("newMessageRecieved", newMessageRecieved);
       let chat = newMessageRecieved.chat;
-      io.in(newMessageRecieved.chatId).emit("message recieved", newMessageRecieved);
+      socket.join(newMessageRecieved.chatId)
+      // io.in(newMessageRecieved.chatId).emit("message recieved", newMessageRecieved);
+      socket.emit("message recieved", newMessageRecieved);
+      socket.broadcast.to(newMessageRecieved.chatId).emit("message recieved", newMessageRecieved)
 
     });
 
