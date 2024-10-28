@@ -39,7 +39,7 @@ const accessChat = async (req, res) => {
 
     // Filter the user's chats to find a chat that includes the provided userId
     const userInchat = user.chats.filter((chat) => {
-      return chat.users.some((user) => user.id === userId);
+      return chat.isGroupChat==false&&chat.users.some((user) => user.id === userId);
     });
 
     if (userInchat.length > 0) {

@@ -237,7 +237,7 @@ const ChatBox = ({ selectedChat }) => {
       </Modal>
 
       {/* Chat Messages Section */}
-      <div className="mx-2 border border-gray-800 bg-gray-700 h-80 rounded-md shadow-inner overflow-y-auto">
+      <div className="mx-2 border border-gray-800 bg-gray-700 h-[86%] sm:h-96 rounded-md shadow-inner overflow-y-auto">
         {chatId && <ScrollableChatBox chatId={chatId} />}
       </div>
     </>

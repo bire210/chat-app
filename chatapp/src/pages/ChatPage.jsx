@@ -85,7 +85,8 @@ const ChatPage = () => {
           },
         }
       );
-      setChatLists([...chatList, response.data.data]);
+      // console.log(response.data.data,"******************")
+      setChatLists([response.data.data,...chatList]);
     } catch (error) {
       console.error("Error fetching quotes", error);
       setError(error.response.data.error);

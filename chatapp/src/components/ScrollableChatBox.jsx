@@ -149,7 +149,7 @@ const ScrollableChatBox = ({ chatId }) => {
       <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
 
       {/* Messages Section */}
-      <div className="h-[75%] overflow-y-auto flex flex-col-reverse p-4 bg-gray-800 border border-gray-700 rounded-md shadow-inner">
+      <div className="h-[83%] overflow-y-auto flex flex-col-reverse p-4 bg-gray-800 border border-gray-700 rounded-md shadow-inner">
         <div ref={chatEndRef}></div>
         {messages &&
           messages.map((message) => (
@@ -189,7 +189,7 @@ const ScrollableChatBox = ({ chatId }) => {
       </div>
 
       {/* Input and Clear Chat Section */}
-      <div className="flex flex-row items-center justify-between w-full mt-4">
+      <div className="flex flex-row h-[13%] my-2 px-2 items-center justify-between w-full ">
         {/* Clear Chat Button */}
         <button
           onClick={clearCurrentChat}
