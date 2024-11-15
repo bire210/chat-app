@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 
-import  { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 const Modal = ({ isOpen, onClose, children }) => {
   const modalRef = useRef();
-
+  console.log("**********************************8", children);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -12,9 +12,9 @@ const Modal = ({ isOpen, onClose, children }) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
 
