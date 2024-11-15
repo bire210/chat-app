@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { Routes, Route } from "react-router-dom";
 import SignUp from "./components/Auth/SignUp";
 import Login from "./components/Auth/Login";

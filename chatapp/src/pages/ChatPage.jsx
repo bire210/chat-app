@@ -86,11 +86,11 @@ const ChatPage = () => {
         }
       );
       // console.log(response.data.data,"******************")
-      setChatLists([response.data.data,...chatList]);
+      setChatLists([response.data.data, ...chatList]);
     } catch (error) {
       console.error("Error fetching quotes", error);
       setError(error.response.data.error);
-      toast.warning(`${apiError}`, {
+      toast.warning(`${error.response.data.error}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,

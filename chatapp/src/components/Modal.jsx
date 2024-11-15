@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 const Modal = ({ isOpen, onClose, children }) => {
   const modalRef = useRef();
-  console.log("**********************************8", children);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {

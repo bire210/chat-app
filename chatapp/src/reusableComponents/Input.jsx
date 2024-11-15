@@ -10,7 +10,10 @@ const Input = React.forwardRef(function Input(
   const [showPassword, setShowPassword] = useState(false);
 
   // Determine the input type (either "text" or "password")
-  const inputType = type === "password" && !showPassword ? "password" : "text";
+  let inputType = type;
+  if (type != "file") {
+    inputType = type === "password" && !showPassword ? "password" : "text";
+  }
 
   return (
     <div className="w-full">

@@ -87,13 +87,13 @@ function SignUp() {
     <div className="min-h-screen bg-gray-50">
       {/* Header fixed at the top */}
       <div className="w-full h-16 flex items-center justify-center rounded-xl bg-slate-600 font-bold text-xl sm:text-2xl text-slate-200">
-    Talk Here
-  </div>
+        Talk Here
+      </div>
 
       {/* Main content container */}
-      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 min-h-screen pt-20">
+      <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 min-h-screen pt-1">
         <ToastContainer />
-        <div className="mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-6 sm:p-10 border border-black/10 shadow-lg mt-4">
+        <div className="mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-2 sm:p-10 border border-black/10 shadow-lg mt-2">
           <h2 className="text-center text-xl sm:text-2xl font-bold leading-tight">
             Sign up to create account
           </h2>
@@ -107,7 +107,7 @@ function SignUp() {
             </Link>
           </p>
 
-          <form onSubmit={handleSubmit(create)} className="mt-6">
+          <form onSubmit={handleSubmit(create)} className="mt-">
             <div className="space-y-3">
               <Input
                 label="Full Name: "
