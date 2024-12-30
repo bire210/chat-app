@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import SignUp from "./components/Auth/SignUp";
 import Login from "./components/Auth/Login";
 import ChatPage from "./pages/ChatPage";
@@ -8,8 +8,7 @@ import NotFoundPage from "./pages/NotFoundPage";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
-      <Route path="/chat" element={<PrivateRoute />}>
+      <Route path="/" element={<PrivateRoute />}>
         <Route path="" element={<ChatPage />} />
       </Route>
       <Route path="/sign-up" element={<SignUp />} />

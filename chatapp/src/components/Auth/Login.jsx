@@ -33,7 +33,7 @@ const Login = () => {
       Cookies.set("token", response.data.data.token);
       Cookies.set("user", JSON.stringify(response.data.data.user));
       setLoginUser(response.data.data.user);
-      navigate("/chat");
+      navigate("/");
     } catch (error) {
       setError(error.response.data.error);
       toast.warning(`${apiError}`, {
