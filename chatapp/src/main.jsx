@@ -1,13 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import {BrowserRouter } from 'react-router-dom'
-import ChatPorviderContext from "./context/ChatProviderContext.jsx"
-ReactDOM.createRoot(document.getElementById('root')).render(
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import { BrowserRouter } from "react-router-dom";
+import ChatPorviderContext from "./context/ChatProviderContext.jsx";
+ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <ChatPorviderContext>
-    <App />
+      <App />
     </ChatPorviderContext>
-  </BrowserRouter>,
-)
+  </BrowserRouter>
+);
