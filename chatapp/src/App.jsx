@@ -3,6 +3,7 @@ import SignUp from "./components/Auth/SignUp";
 import Login from "./components/Auth/Login";
 import ChatPage from "./pages/ChatPage";
 import PrivateRoute from "./components/Auth/PrivateRoute";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       </Route>
       <Route path="/sign-up" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
