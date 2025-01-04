@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import toast from "react-hot-toast";
 import Input from "../../reusableComponents/Input";
 import Button from "../../reusableComponents/Button";
 import { AxiosInstance } from "../../api/apiInstance";
@@ -10,7 +9,6 @@ import Cookies from "js-cookie";
 import { useChatContext } from "../../context/ChatProviderContext";
 
 const Login = () => {
-  const [apiError, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm();
   const { setLoginUser } = useChatContext();
@@ -20,33 +18,13 @@ const Login = () => {
       setLoading(true);
       const response = await AxiosInstance.post("/user/login", data);
       setLoading(false);
-      toast.success("Login success", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.success("Login success");
       Cookies.set("token", response.data.data.token);
       Cookies.set("user", JSON.stringify(response.data.data.user));
       setLoginUser(response.data.data.user);
       navigate("/");
     } catch (error) {
-      setError(error.response.data.error);
-      toast.warning(`${apiError}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-
+      toast.error(error.response.data.error);
       setLoading(false);
     }
   };
@@ -59,7 +37,6 @@ const Login = () => {
 
       {/* Main content container */}
       <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 min-h-[calc(100vh-4rem)]">
-        <ToastContainer />
         <div className="mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-6 sm:p-10 mt-8 border border-black/10 shadow-lg">
           <h2 className="text-center text-xl sm:text-2xl font-bold leading-tight">
             Sign In

@@ -5,16 +5,20 @@ import ChatPage from "./pages/ChatPage";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 
+import { Toaster } from "react-hot-toast";
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<PrivateRoute />}>
-        <Route path="" element={<ChatPage />} />
-      </Route>
-      <Route path="/sign-up" element={<SignUp />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+    <>
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<PrivateRoute />}>
+          <Route path="" element={<ChatPage />} />
+        </Route>
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 }
 

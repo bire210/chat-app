@@ -1,15 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import toast from "react-hot-toast";
 import Input from "../../reusableComponents/Input";
 import Button from "../../reusableComponents/Button";
 import { uploadImageToCloudinary } from "../../utils/imageHandle";
 import { AxiosInstance } from "../../api/apiInstance";
 
 function SignUp() {
-  const [apiError, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const { register, handleSubmit, setValue } = useForm();
   const navigate = useNavigate();
@@ -22,63 +20,23 @@ function SignUp() {
         const imageUrl = await uploadImageToCloudinary(file);
         console.log(imageUrl);
         setValue("image", imageUrl);
-        toast.success("file Uploaded", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.success("file Uploaded");
         setUploading(false);
       } catch (error) {
-        console.error(error);
-        setError(error.message);
-        toast.warning(`${apiError}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        toast.error(error.message);
         setUploading(false);
       }
     }
   };
 
   const create = async (data) => {
-    console.log("data  8888888888", data);
+    // console.log("data  8888888888", data);
     try {
       await AxiosInstance.post("/user/sign-up", data);
-      toast.success("Registration is done", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.success("Registration is done");
       navigate("/login");
     } catch (error) {
-      // console.error(error.response.data,"***********************888");
-      setError(error.response.data.error);
-      toast.warning(`${apiError}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error(error.response.data.error);
       // console.error("Login failed", error);
     }
   };
@@ -92,7 +50,6 @@ function SignUp() {
 
       {/* Main content container */}
       <div className="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 min-h-screen pt-1">
-        <ToastContainer />
         <div className="mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-2 sm:p-10 border border-black/10 shadow-lg mt-2">
           <h2 className="text-center text-xl sm:text-2xl font-bold leading-tight">
             Sign up to create account

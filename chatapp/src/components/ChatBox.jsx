@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { AxiosInstance } from "../api/apiInstance";
 import Cookies from "js-cookie";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 
 const ChatBox = ({ selectedChat }) => {
@@ -54,15 +54,7 @@ const ChatBox = ({ selectedChat }) => {
       setGroupMember(response.data.data.users);
       setGroupMemberIds(response.data.data.users.map((friend) => friend.id));
     } catch (error) {
-      toast.warning(error.response.data.error, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "light",
-      });
+      toast.warning(error.response.data.error);
     }
   };
 
@@ -77,15 +69,7 @@ const ChatBox = ({ selectedChat }) => {
         setGroupMember(response.data.data.users);
         setGroupMemberIds(response.data.data.users.map((friend) => friend.id));
       } catch (error) {
-        toast.warning(error.response.data.error, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "light",
-        });
+        toast.warning(error.response.data.error);
       }
     },
     [chatId, token]
