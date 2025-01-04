@@ -2,9 +2,7 @@
 import { useEffect, useState } from "react";
 import { useChatContext } from "../context/ChatProviderContext";
 import { AxiosInstance } from "../api/apiInstance";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-// import ChatList from "../components/chatlist/ChatList";
+import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import ChatBox from "../components/ChatBox";
 import Modal from "../components/Modal";
@@ -13,7 +11,7 @@ import { FaPlus } from "react-icons/fa";
 
 const ChatPage = () => {
   const [query, setQuery] = useState("");
-  const [apiError, setError] = useState("");
+
   const navigate = useNavigate();
   const [searchUsers, setSearchUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +26,6 @@ const ChatPage = () => {
   const token = Cookies.get("token") || "";
   const fetchChats = async () => {
     try {
-      setError("");
       const response = await AxiosInstance.get(`/chat/all-chats`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -47,25 +44,14 @@ const ChatPage = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      setError("");
       const response = await AxiosInstance.get(`/user/find-friend?q=${query}`);
       setSearchUsers(response.data.data);
       setQuery("");
-      setIsModalOpen(true); // Open the modal when search results are received
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error fetching quotes", error);
-      setError(error.response.data.error);
-      toast.warning(`${apiError}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      setError("");
+
+      toast.warning(error.response.data.error);
     }
   };
 
@@ -75,7 +61,6 @@ const ChatPage = () => {
 
   const accessChatHandel = async (user) => {
     try {
-      setError("");
       const response = await AxiosInstance.post(
         `/chat/access-chat`,
         { userId: user.id },
@@ -88,18 +73,7 @@ const ChatPage = () => {
       // console.log(response.data.data,"******************")
       setChatLists([response.data.data, ...chatList]);
     } catch (error) {
-      console.error("Error fetching quotes", error);
-      setError(error.response.data.error);
-      toast.warning(`${error.response.data.error}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error(error.response.data.error);
     }
     setIsModalOpen(false);
   };
@@ -126,7 +100,6 @@ const ChatPage = () => {
     // console.log(selectedFriendsIds);
 
     try {
-      setError("");
       const response = await AxiosInstance.post(
         `/chat/create-group`,
         { users: selectedFriendsIds, groupName: channelName },
@@ -138,18 +111,7 @@ const ChatPage = () => {
       );
       setChatLists([...chatList, response.data.data]);
     } catch (error) {
-      // console.error("Error fetching quotes", error.response.data.error);
-      setError(error.response.data.error || "Failed to create group");
-      toast.warning(`${error.response.data.error}`, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
+      toast.error(error.response.data.error);
     } finally {
       setCreateGroup(false);
       setChannelName("");
@@ -167,7 +129,6 @@ const ChatPage = () => {
   };
   return (
     <div>
-      <ToastContainer />
       <div className="relative h-16 m-4 grid gap-4 grid-cols-12 bg-gray-100  rounded-lg shadow-md">
         {/* Search Input and Button */}
         <div className="relative h-full bg-gray-800 md:col-span-4 col-span-9 flex items-center p-2 rounded-lg shadow-sm">
