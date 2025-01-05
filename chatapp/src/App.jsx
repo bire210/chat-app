@@ -11,12 +11,13 @@ function App() {
     <>
       <Toaster />
       <Routes>
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<PrivateRoute />}>
           <Route path="" element={<ChatPage />} />
         </Route>
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<NotFoundPage />} />
+
+        <Route path="/*" element={<NotFoundPage />} />
       </Routes>
     </>
   );
