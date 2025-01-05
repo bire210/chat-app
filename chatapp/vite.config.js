@@ -14,7 +14,4 @@ export default defineConfig({
       input: "/index.html",
     },
   },
-  // If deploying on certain static hosts, you can enforce the base path
-  // Uncomment below if you have a specific base URL (e.g., for GitHub Pages)
-  // base: '/your-repository-name/',
 });
