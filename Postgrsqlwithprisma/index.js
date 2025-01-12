@@ -10,6 +10,8 @@ import { Server } from "socket.io";
 import { ApiError } from "./utils/apiError.js";
 import { chatRouter } from "./routes/chatRoute.js";
 import { messageRouter } from "./routes/messageRoute.js";
+import { error } from "console";
+import { ApiResponse } from "./utils/apiResponse.js";
 dotenv.config();
 
 const numberOfCPU = os.availableParallelism();
@@ -49,6 +51,19 @@ if (cluster.isPrimary) {
     res.status(404).json(new ApiError(404, "Route Not Found"));
   });
 
+  app.use((error, req, res, next) => {
+    if (error instanceof ApiError) {
+      res
+        .status(error.statusCode || 500)
+        .json(
+          new ApiError(
+            error.statusCode || 500,
+            error.error || "Something Went Wrong !"
+          )
+        );
+    }
+    res.status(500).json(new ApiError(500, "Something Went Wrong!"));
+  });
   const PORT = process.env.PORT || 8000;
   const server = app.listen(PORT, async () => {
     try {
